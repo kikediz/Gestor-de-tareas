@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestor de tareas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="../static/css/popup_style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Crear tarea</h1>
+        <button class="back-button" onclick="goBack()">Regresar</button>
+        <form id="taskForm">
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" class="form-control" id="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea class="form-control" id="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Fecha de Vencimiento</label>
+                <input type="date" class="form-control" id="dueDate" required>
+            </div>
+            <div class="form-group">
+                <label for="completionDate">Fecha de terminación</label>
+                <input type="date" class="form-control" id="completionDate">
+            </div>
+            <div class="form-group">
+                <label for="status">Estado</label>
+                <select class="form-control" id="status" required>
+                    <option value="Pending">Pendiente</option>
+                    <option value="Completed">Completada</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+
+    <div id="popup-container" class="hidden">
+        <div id="popup-content"></div>
+        <button onclick="cerrarPopup()">Cerrar</button>
+    </div>
+
+    <script src="../static/js/script.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function cerrarPopup() {
+            $('#popup-container').hide();
+        }
+        function mostrarPopup(contenido) {
+            $('#popup-content').html(contenido);
+            $('#popup-container').show();
+        }
+        $(document).ready(function() {
+            $('#taskForm').submit(function(event) {
+                event.preventDefault();
+                var title = $('#title').val();
+                var description = $('#description').val();
+                var dueDate = $('#dueDate').val();
+                var completionDate = $('#completionDate').val();
+                var status = $('#status').val();
+
+                $.ajax({
+                    url: '/api/create',
+                    type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({
+                        title: title,
+                        description: description,
+                        dueDate: dueDate,
+                        completionDate: completionDate,
+                        status: status
+                    }),
+                    success: function(data) {
+                        mostrarPopup('¡Éxito!', 'green');
+                    },
+                    error: function() {
+                        mostrarPopup('Algo salió mal', 'red');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

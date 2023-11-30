@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tareas Pendientes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style_pending.css">
+    <link rel="stylesheet" href="../static/css/popup_style.css">
+</head>
+<body>
+    <h1 style="text-align: center;">Tareas Pendientes</h1>
+    <div id="popup-container" class="hidden">
+        <div id="popup-content"></div>
+        <button onclick="cerrarPopup()">Cerrar</button>
+    </div>
+    <button class="back-button" onclick="goBack()">Regresar</button>
+    <table id="task-table" class="table">
+        <thead>
+            <tr>
+                <th>Tarea</th>
+                <th>Descripción</th>
+                <th>Vencimiento</th>
+                <th>Completada</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for task in tasks|sort(attribute='due_date') %}
+            <tr id="task-{{ task.id }}">
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.completion_date }}</td>
+                <td>{{ task.status }}</td>
+                <td>
+                    <button onclick="completeTask('{{ task.id }}')">Marcar como completada</button>
+                </td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="../static/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+       
+        function completeTask(taskId) {
+            $.ajax({
+                url: '/api/complete',
+                type: 'POST',
+                data: JSON.stringify({ taskId: taskId }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(data) {
+                    if (data.mensaje) {
+                        const taskElement = document.getElementById('task-' + taskId);
+                        
+                        taskElement.classList.add('Completed');
+                        taskElement.remove();
+                        mostrarPopup(data.mensaje, 'green');
+                    } else {
+                        mostrarPopup(data.mensaje, 'red');
+                    }
+                },
+                error: function(error) {
+                    mostrarPopup(error, 'red');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

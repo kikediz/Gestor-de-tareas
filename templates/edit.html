@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Tareas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style_pending.css">
+    <link rel="stylesheet" href="../static/css/popup_style.css">
+    <link rel="stylesheet" href="../static/css/table_style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function actualizarTarea(idTarea) {
+            var newTitle = document.getElementById("title-" + idTarea).value;
+            var newDescription = document.getElementById("description-" + idTarea).value;
+            var newDueDate = document.getElementById("due_date-" + idTarea).value;
+            var newCompletionDate = document.getElementById("completion_date-" + idTarea).value;
+            var newStatus = document.getElementById("status-" + idTarea).value;
+
+            $.ajax({
+                url: "/api/update",
+                type: "POST",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({
+                    id: idTarea,
+                    title: newTitle,
+                    description: newDescription,
+                    dueDate: newDueDate,
+                    completionDate: newCompletionDate,
+                    status: newStatus
+                }),
+                success: function(response) {
+                    mostrarPopup(response.mensaje, 'green');
+                },
+                error: function(xhr, status, error) {
+                    mostrarPopup(data.mensaje, 'red');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1 style="text-align: center;">Listado de Tareas</h1>
+    <div id="popup-container" class="hidden">
+        <div id="popup-content"></div>
+        <button onclick="cerrarPopup()">Cerrar</button>
+    </div>
+    <button class="back-button" onclick="goBack()">Regresar</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tarea</th>
+                <th>Descripción</th>
+                <th>Vencimiento</th>
+                <th>Completada</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for task in tasks|sort(attribute='due_date') %}
+            <tr id="task-{{ task.id }}">
+                <td class="input-column"><input type="text" id="title-{{ task.id }}" value="{{ task.title }}"></td>
+                <td class="textarea-column"><textarea id="description-{{ task.id }}" rows="3">{{ task.description }}</textarea></td>
+                <td class="date-input-column"><input type="date" id="due_date-{{ task.id }}" value="{{ task.due_date }}"></td>
+                <td class="date-input-column"><input type="date" id="completion_date-{{ task.id }}" value="{{ task.completion_date }}"></td>
+                <td class="select-column"><select class="form-control" id="status-{{ task.id }}" required>
+                    <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pendiente</option>
+                    <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completada</option>
+                </select></td>
+                <td>
+                    <button onclick="actualizarTarea('{{ task.id }}')">Actualizar</button>
+                </td>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    <script src="../static/js/script.js"></script>
+</body>
+</html>

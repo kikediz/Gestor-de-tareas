@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Tareas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style_pending.css">
+    <link rel="stylesheet" href="../static/css/popup_style.css">
+    <link rel="stylesheet" href="../static/css/table_style.css">
+    <link rel="stylesheet" href="../static/css/style_list.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <h1 style="text-align: center;">Listado de Tareas</h1>
+    <button class="back-button" onclick="goBack()">Regresar</button>
+    <div class="filtros-container">
+    <div class="filtro-container">
+        <label for="filtro-tarea" class="filtro-label">Filtrar por Tarea:</label>
+        <input type="text" id="filtro-tarea" class="filtro-input" oninput="filtrarTareas()">
+    </div>
+    <div class="filtro-container">
+        <label for="filtro-descripcion" class="filtro-label">Filtrar por Descripción:</label>
+        <input type="text" id="filtro-descripcion" class="filtro-input" oninput="filtrarTareas()">
+    </div>
+    <div class="filtro-container">
+        <label for="filtro-vencimiento" class="filtro-label">Filtrar por Vencimiento:</label>
+        <input type="date" id="filtro-vencimiento" class="filtro-input" oninput="filtrarTareas()">
+    </div>
+    <div class="filtro-container">
+        <label for="filtro-completado" class="filtro-label">Filtrar por Completada:</label>
+        <input type="date" id="filtro-completado" class="filtro-input" oninput="filtrarTareas()">
+    </div>
+    <div class="filtro-container">
+        <label for="filtro-estado" class="filtro-label">Filtrar por Estado:</label>
+        <select id="filtro-estado" class="filtro-select" onchange="filtrarTareas()">
+            <option value="">Todos</option>
+            <option value="pending">Pendiente</option>
+            <option value="completed">Completada</option>
+        </select>
+    </div>
+    </div>
+    
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tarea</th>
+                <th>Descripción</th>
+                <th>Vencimiento</th>
+                <th>Completada</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for task in tasks|sort(attribute='due_date') %}
+            <tr id="task-{{ task.id }}">
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.completion_date }}</td>
+                <td>{{ task.status }}</td>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    <script src="../static/js/filter.js"></script>
+    <script src="../static/js/script.js"></script>
+</body>
+</html>

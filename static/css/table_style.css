@@ -1,0 +1,59 @@
+/* Estilos para la tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+/* Estilos para las celdas de encabezado */
+.table th {
+    background-color: #f2f2f2;
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Estilos generales para las celdas de datos */
+.table td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Estilo específico para la columna con input */
+.table td.input-column input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo específico para la columna con textarea */
+.table td.textarea-column textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo específico para la columna con input de tipo date */
+.table td.date-input-column input[type="date"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo específico para la columna con select */
+.table td.select-column select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo específico para la columna con botón */
+.table td.button-column button {
+    padding: 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Cambiar el color del botón al pasar el ratón sobre él */
+.table td.button-column button:hover {
+    background-color: #45a049;
+}

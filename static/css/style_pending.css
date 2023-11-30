@@ -1,0 +1,7 @@
+
+.task-item {
+    margin-bottom: 10px;
+}
+.task-item.completed {
+    text-decoration: line-through;
+}
