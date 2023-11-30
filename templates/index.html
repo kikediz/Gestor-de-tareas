@@ -4,71 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acciones de Tareas</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .note-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 20px;
-            gap: 20px;
-        }
-
-        .note {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 20px;
-            width: calc(33.33% - 20px); /* 33.33% width with 20px gap */
-            box-sizing: border-box;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .note:hover {
-            transform: scale(1.05);
-        }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-
-        li {
-            margin: 10px 0;
-        }
-
-        a {
-            display: block;
-            padding: 15px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 18px;
-            margin: 10px 0;
-            transition: background-color 0.3s;
-        }
-
-        a:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../static/css/index_style.css">
 </head>
 <body>
-    <h1>Acciones de Tareas</h1>
+    <h1>Indicadores de tareas</h1>
+    <div class="note-container">
+        <div class="note note_scroll">
+            <h2>Tareas Pendientes del Día</h2>
+            {% for task in tasks|sort(attribute='due_date') %}
+            <ul class="styled-list">
+                <li id="task-{{ task.id }}">{{ task.title }}</li>
+            </ul>
+            {% endfor %}
+        </div>
+
+        <div class="note note_stats">
+            <h2>Estadísticas</h2>
+        </div>
+    </div>
+    <h1>Gestión de Tareas</h1>
 
     <div class="note-container">
         <div class="note"><a href="/create">Agregar Tarea</a></div>
@@ -76,17 +31,67 @@
         <div class="note"><a href="/api/edit">Editar Tarea</a></div>
         <div class="note"><a href="/api/list">Filtrar Tareas</a></div>
     </div>
+    <script src="../static/js/script.js"></script>
+    <script>
 
-    <div class="note-container">
-        <div class="note">
-            <h2>Tareas Pendientes del Día</h2>
-            
-        </div>
+        const data = {{ task_stat|tojson|safe }};
+    
+        function calcularEstadisticas() {
+            const tareasCompletadas = data.filter(tarea => tarea.status === "Completed");
+            const fechasCompletadas = tareasCompletadas.map(tarea => tarea.completion_date);
+            const fechasUnicas = [...new Set(fechasCompletadas)];
+            const cantidadTareasPorDia = [];
 
-        <div class="note">
-            <h2>Estadísticas</h2>
-            
-        </div>
-    </div>
+            fechasUnicas.forEach(fecha => {
+                const tareasEnFecha = tareasCompletadas.filter(tarea => tarea.completion_date === fecha);
+                cantidadTareasPorDia.push({ fecha, cantidad: tareasEnFecha.length });
+            });
+
+            const table = document.createElement("table");
+            const headerRow = table.insertRow();
+            const headerCell1 = headerRow.insertCell(0);
+            headerCell1.textContent = "Fecha";
+            const headerCell2 = headerRow.insertCell(1);
+            headerCell2.textContent = "Cantidad de Tareas Completadas";
+
+            cantidadTareasPorDia.forEach(dato => {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                cell1.textContent = dato.fecha;
+                const cell2 = row.insertCell(1);
+                cell2.textContent = dato.cantidad;
+            });
+
+            const chartContainer = document.createElement("canvas");
+            chartContainer.style.width = "100%";
+            chartContainer.style.height = "300px";
+            document.querySelector('.note_stats').appendChild(chartContainer);
+
+            const ctx = chartContainer.getContext("2d");
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: cantidadTareasPorDia.map(dato => dato.fecha),
+                datasets: [{
+                    label: 'Cantidad de Tareas Completadas',
+                    data: cantidadTareasPorDia.map(dato => dato.cantidad),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                scales: {
+                    y: {
+                    beginAtZero: true
+                    }
+                }
+                }
+            });
+        }
+
+        calcularEstadisticas();
+      </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import url_for
 from flask import Flask, request, jsonify
 from flask import render_template
@@ -12,7 +13,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    now = datetime.now()
+    formatted_date = now.strftime("%Y-%m-%d")
+    pending_tasks = Task.filter_by_status_today(status='Pending', date=formatted_date)
+    tasks = Task.get_all_tasks()
+    return render_template('index.html', tasks=pending_tasks, task_stat=tasks)
 
 @app.route('/create')
 def create_view():

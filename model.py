@@ -129,6 +129,17 @@ class Task(object):
                 if task_data['status'] == status:
                     filtered_tasks.append(task_data)
         return filtered_tasks
+    
+    @staticmethod
+    def filter_by_status_today(status, date):
+        with open(data_file, "r") as f:
+            data = json.load(f)
+            task_list = data['task']
+            filtered_tasks = []
+            for task_data in task_list:
+                if task_data['status'] == status and task_data['due_date'] == date:
+                    filtered_tasks.append(task_data)
+        return filtered_tasks
 
 
     def update_status(id, new_status):
